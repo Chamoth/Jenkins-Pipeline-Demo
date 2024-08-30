@@ -11,121 +11,64 @@ pipeline {
             }
         }
 
-        
+
         stage('Build') {
             steps {
-                script {
-                    echo 'Building the application...'
-                    // Use Maven to build the project
-                    sh 'mvn clean package'
-                }
+                echo 'Starting Build Stage'
+                // Build steps here
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                script {
-                    echo 'Running unit and integration tests...'
-                    // Run unit and integration tests using Maven
-                    sh 'mvn test'
-                }
-            }
-            post {
-                always {
-                    // Collect test results
-                    junit 'target/surefire-reports/*.xml'
-                    // Send email notification after tests
-                    emailext(
-                        subject: "Jenkins Pipeline: Unit/Integration Tests",
-                        body: "The Unit and Integration tests have completed. Check the attached results.",
-                        to: "dev-team@example.com",
-                        attachLog: true
-                    )
-                }
+                echo 'Executing Unit and Integration Tests...'
+                // Test steps here
             }
         }
 
         stage('Code Analysis') {
             steps {
-                script {
-                    echo 'Analyzing code...'
-                    // Perform code analysis using SonarQube
-                    sh 'mvn sonar:sonar'
-                }
+                echo 'Performing Code Analysis...'
+                // Code analysis steps here
             }
         }
 
         stage('Security Scan') {
             steps {
-                script {
-                    echo 'Performing security scan...'
-                    // Perform security scan using OWASP Dependency-Check or Snyk
-                    sh 'mvn dependency-check:check'
-                }
-            }
-            post {
-                always {
-                    // Send email notification after security scan
-                    emailext(
-                        subject: "Jenkins Pipeline: Security Scan",
-                        body: "The Security Scan has completed. Check the attached results.",
-                        to: "dev-team@example.com",
-                        attachLog: true
-                    )
-                }
+                echo 'Conducting Security Scan...'
+                // Security scan steps here
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                script {
-                    echo 'Deploying to staging environment...'
-                    // Deploy the application to a staging server (example: AWS EC2)
-                    sh 'scp target/myapp.war user@staging-server:/path/to/deploy'
-                }
+                echo 'Deploying Application to Staging Environment...'
+                // Staging deployment steps here
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
-                script {
-                    echo 'Running integration tests on staging environment...'
-                    // Run integration tests on the staging environment
-                    sh 'curl -X GET http://staging-server/api/test'
-                }
+                echo 'Running Integration Tests on Staging Environment...'
+                // Integration tests here
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                script {
-                    echo 'Deploying to production environment...'
-                    // Deploy the application to the production server
-                    sh 'scp target/myapp.war user@production-server:/path/to/deploy'
-                }
+                echo 'Deploying Application to Production Environment...'
+                // Production deployment steps here
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
-            // Optionally send a success notification
-            emailext(
-                subject: "Jenkins Pipeline: Success",
-                body: "The Jenkins pipeline completed successfully.",
-                to: "dev-team@example.com"
-            )
+            echo 'Pipeline succeeded'
         }
+
         failure {
-            echo 'Pipeline failed!'
-            // Send a failure notification
-            emailext(
-                subject: "Jenkins Pipeline: Failure",
-                body: "The Jenkins pipeline failed. Please check the logs for more details.",
-                to: "dev-team@example.com",
-                attachLog: true
-            )
+            echo 'Pipeline failed'
         }
     }
 }
