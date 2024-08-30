@@ -2,6 +2,16 @@ pipeline {
     agent any
 
     stages {
+        stage('Wait for Short Delay') {
+            steps {
+                script {
+                    echo 'Waiting for 10 seconds before starting the pipeline...'
+                    sleep time: 10, unit: 'SECONDS'  // Adjust the delay as needed
+                }
+            }
+        }
+
+        
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/Chamoth/Jenkins-Pipeline-Demo.git'
