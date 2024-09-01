@@ -59,29 +59,6 @@ pipeline {
                 // Add security scan steps here
                 // Example: sh 'snyk test'
             }
-            post {
-                always {
-                    script {
-                        def log = currentBuild.rawBuild.getLog(50).join('\n') // Retrieves the last 50 lines of the stage log
-                        def status = currentBuild.currentResult
-                        def subject = "Security Scan Stage Status Notification - ${status}"
-
-                        emailext (
-                            to: "${EMAIL_RECIPIENTS}",
-                            subject: subject,
-                            body: """
-                            The Security Scan stage ${status}.
-
-                            Here are the last 50 lines of the stage log:
-
-                            ${log}
-                            """,
-                            attachmentsPattern: "**/security.log", // Adjust the path to your actual log file if necessary
-                            compress: true
-                        )
-                    }
-                }
-            }
         }
 
         stage('Deploy to Staging') {
