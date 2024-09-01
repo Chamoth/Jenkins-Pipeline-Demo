@@ -91,7 +91,7 @@ pipeline {
             steps {
                 echo 'Deploying Application to Production Environment...'
                 // Add production deployment steps here
-                // Example: sh 'aws s3 cp app.war s3://mybucket/app.war'
+                // Example: sh 'aws s3 cp app.war s3://mybucket/app.war'.
             }
         }
     }
