@@ -19,7 +19,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Initiating Build Process'
-                // Add your build steps here
+                // Add build steps here
                 // Example: sh 'mvn clean install'
             }
         }
@@ -27,15 +27,38 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running Unit and Integration Tests...'
-                // Add your test steps here
+                // Add test steps here
                 // Example: sh 'mvn test'
+            }
+            post {
+                always {
+                    script {
+                        def log = currentBuild.rawBuild.getLog(50).join('\n') // Retrieves the last 50 lines of the stage log
+                        def status = currentBuild.currentResult
+                        def subject = "Test Stage Status Notification - ${status}"
+
+                        emailext (
+                            to: "${EMAIL_RECIPIENTS}",
+                            subject: subject,
+                            body: """
+                            The Unit and Integration Tests stage ${status}.
+
+                            Here are the last 50 lines of the stage log:
+
+                            ${log}
+                            """,
+                            attachmentsPattern: "**/test.log", // Adjust the path to your actual log file if necessary
+                            compress: true
+                        )
+                    }
+                }
             }
         }
 
         stage('Code Analysis') {
             steps {
                 echo 'Conducting Code Quality Analysis...'
-                // Add your code analysis steps here
+                // Add code analysis steps here
                 // Example: sh 'mvn sonar:sonar'
             }
         }
@@ -43,15 +66,38 @@ pipeline {
         stage('Security Scan') {
             steps {
                 echo 'Executing Security Scan...'
-                // Add your security scan steps here
+                // Add security scan steps here
                 // Example: sh 'snyk test'
+            }
+            post {
+                always {
+                    script {
+                        def log = currentBuild.rawBuild.getLog(50).join('\n') // Retrieves the last 50 lines of the stage log
+                        def status = currentBuild.currentResult
+                        def subject = "Security Scan Stage Status Notification - ${status}"
+
+                        emailext (
+                            to: "${EMAIL_RECIPIENTS}",
+                            subject: subject,
+                            body: """
+                            The Security Scan stage ${status}.
+
+                            Here are the last 50 lines of the stage log:
+
+                            ${log}
+                            """,
+                            attachmentsPattern: "**/security.log", // Adjust the path to your actual log file if necessary
+                            compress: true
+                        )
+                    }
+                }
             }
         }
 
         stage('Deploy to Staging') {
             steps {
                 echo 'Deploying Application to Staging Environment...'
-                // Add your deployment steps here
+                // Add deployment steps here
                 // Example: sh 'scp target/app.jar user@staging-server:/deploy-path'
             }
         }
@@ -59,7 +105,7 @@ pipeline {
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Performing Integration Tests on Staging Environment...'
-                // Add your integration test steps here
+                // Add integration test steps here
                 // Example: sh 'mvn verify -P integration-test'
             }
         }
@@ -67,32 +113,8 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo 'Deploying Application to Production Environment...'
-                // Add your production deployment steps here
+                // Add production deployment steps here
                 // Example: sh 'aws s3 cp app.war s3://mybucket/app.war'
-            }
-        }
-    }
-
-    post {
-        always {
-            script {
-                def log = currentBuild.rawBuild.getLog(50).join('\n') // Retrieves the last 50 lines of the build log
-                def status = currentBuild.currentResult
-                def subject = "Build Status Notification - ${status}"
-
-                emailext (
-                    to: "${EMAIL_RECIPIENTS}",
-                    subject: subject,
-                    body: """
-                    The build ${status} at ${env.BUILD_URL}.
-
-                    Here are the last 50 lines of the build log:
-
-                    ${log}
-                    """,
-                    attachmentsPattern: "**/build.log", // Adjust the path to your actual log file if necessary
-                    compress: true
-                )
             }
         }
     }
