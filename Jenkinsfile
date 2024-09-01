@@ -15,7 +15,7 @@ pipeline {
             steps {
                 echo 'Initiating Build Process'
                 // Add build steps here
-                // Example: sh 'mvn clean install'
+                // Example: sh 'mvn clean install'.
             }
         }
 
