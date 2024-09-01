@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        EMAIL_RECIPIENTS = 'cketipearachchi@gmail.com'
-        EMAIL_SUBJECT = "Jenkins Pipeline Notification"
-    }
-
     stages {
         stage('Wait for Short Delay') {
             steps {
@@ -31,25 +26,20 @@ pipeline {
                 // Example: sh 'mvn test'
             }
             post {
-                always {
+                success {
                     script {
-                        def log = currentBuild.rawBuild.getLog(50).join('\n') // Retrieves the last 50 lines of the stage log
-                        def status = currentBuild.currentResult
-                        def subject = "Test Stage Status Notification - ${status}"
-
-                        emailext (
-                            to: "${EMAIL_RECIPIENTS}",
-                            subject: subject,
-                            body: """
-                            The Unit and Integration Tests stage ${status}.
-
-                            Here are the last 50 lines of the stage log:
-
-                            ${log}
-                            """,
-                            attachmentsPattern: "**/test.log", // Adjust the path to your actual log file if necessary
-                            compress: true
-                        )
+                        def log = currentBuild.rawBuild.getLog(50).join('\n') // Gets the last 50 lines of the log
+                        mail to: "cketipearachchi@gmail.com",
+                            subject: "Build Status Email - Success",
+                            body: "Build was successful! Changes are made here \n\nHere are the last 50 lines of the log:\n${log}"
+                    }
+                }
+                failure {
+                    script {
+                        def log = currentBuild.rawBuild.getLog(50).join('\n') // Gets the last 50 lines of the log
+                        mail to: "cketipearachchi@gmail.com",
+                            subject: "Build Status Email - Failure",
+                            body: "Build failed. Please check the logs for more details.\n\nHere are the last 50 lines of the log:\n${log}"
                     }
                 }
             }
