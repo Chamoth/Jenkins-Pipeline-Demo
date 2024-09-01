@@ -23,7 +23,7 @@ pipeline {
             steps {
                 echo 'Running Unit and Integration Tests...'
                 // Add test steps here
-                // Example: sh 'mvn test'
+                // Example: sh 'mvn test'.
             }
             post {
                 success {
